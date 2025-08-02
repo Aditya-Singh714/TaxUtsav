@@ -1,0 +1,28 @@
+# Node modules
+node_modules/
+
+# Environment variables
+.env
+
+# Logs
+logs
+*.log
+npm-debug.log*
+
+# Debugging
+.vscode/
+.DS_Store
+*.swp
+
+# System Files
+Thumbs.db
+
+# Optional: coverage reports
+coverage/
+
+# Optional: OS-specific files
+*.sublime-workspace
+*.sublime-project
+
+# Render build artifacts (optional)
+build/
