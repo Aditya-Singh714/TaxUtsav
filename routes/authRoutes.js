@@ -3,6 +3,8 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import User from "../models/User.js";
 import nodemailer from "nodemailer";
+import BlacklistedToken from "../models/BlacklistedToken.js";
+import authMiddleware from "../middlewares/authMiddleware.js";
 
 const router = express.Router();
 
@@ -123,6 +125,18 @@ router.post("/reset-password", async (req, res) => {
   await user.save();
 
   res.json({ message: "Password reset successful" });
+});
+
+// ================= LOGOUT =================
+router.post("/logout", authMiddleware, async (req, res) => {
+  const token = req.token;
+
+  await BlacklistedToken.create({
+    token,
+    expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000), // match JWT expiry
+  });
+
+  res.json({ message: "Logged out successfully" });
 });
 
 export default router;
