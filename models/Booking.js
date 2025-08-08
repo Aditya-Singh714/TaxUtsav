@@ -8,7 +8,7 @@ const bookingSchema = new mongoose.Schema({
   slotTime: { type: String, required: true },
   coupn_Code: { type: String },
   amount: { type: Number, required: true },
-  userId: {
+  user: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
     required: true,
@@ -20,3 +20,4 @@ const bookingSchema = new mongoose.Schema({
 }
 
 export default mongoose.model("Booking", bookingSchema);
+
