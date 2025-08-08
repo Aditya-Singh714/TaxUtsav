@@ -2,27 +2,22 @@ import mongoose from "mongoose";
 
 const orderSchema = new mongoose.Schema(
   {
-    description: {
-      type: String,
-      required: true,
-    },
-    quantity: {
-      type: Number,
-      required: true,
-    },
-    price: {
-      type: Number,
-      required: true,
-    },
-    user: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      required: true,
-    },
+    items: [
+      {
+        name: String,
+        description: String,
+        quantity: Number,
+        price: Number,
+      },
+    ],
+    paymentMethod: String,
+    userId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+    razorpay_order_id: String,
+    razorpay_payment_id: String,
+    razorpay_signature: String,
+    isPaid: { type: Boolean, default: false },
   },
   { timestamps: true }
-);
+); // ⏰ adds createdAt and updatedAt
 
-const Order = mongoose.model("Order", orderSchema);
-
-export default Order;
+export default mongoose.model("Order", orderSchema);
