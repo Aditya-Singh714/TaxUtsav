@@ -22,7 +22,7 @@ router.post("/book-slot", authMiddleware, async (req, res) => {
       slotTime,
       coupon_Code,
       amount,
-      userId,
+      user: req.user._id,
     });
 
     await booking.save();
@@ -71,3 +71,4 @@ router.get("/my-bookings", authMiddleware, async (req, res) => {
 });
 
 export default router;
+
