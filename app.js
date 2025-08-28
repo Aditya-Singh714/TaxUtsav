@@ -6,6 +6,7 @@ import bookingRoutes from "./routes/bookingRoutes.js";
 import orderRoutes from "./routes/orderRoutes.js";
 import documentRoutes from "./routes/documentRoutes.js";
 import chatRoutes from "./routes/chatRoutes.js";
+import hraRoutes from "./routes/hraRoutes.js";
 
 import cors from "cors";
 
@@ -21,6 +22,7 @@ app.use("/api/booking", bookingRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/documents", documentRoutes);
 app.use("/api/chat", chatRoutes);
+app.use("/api/hra", hraRoutes);
 
 app.get("/", (req, res) => {
   res.send("API is running...");
