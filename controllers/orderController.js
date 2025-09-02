@@ -45,34 +45,12 @@ export const createOrder = async (req, res) => {
 };
 
 // ============================
-// ✅ Get Orders (Optional: Filter by status)
+// ✅ Verify Payment (Redirect flow)
 // ============================
-export const getOrders = async (req, res) => {
+export const verifyPaymentRedirect = async (req, res) => {
   try {
-    const userId = req.user.userId;
-    const query = req.query.status
-      ? { userId, status: req.query.status }
-      : { userId };
-
-    const orders = await Order.find(query);
-    res.json(orders);
-  } catch (err) {
-    console.error("Get Orders Error:", err);
-    res.status(500).json({ message: "Failed to fetch orders" });
-  }
-};
-
-// ============================
-// ✅ Verify Razorpay Payment
-// ============================
-export const verifyPayment = async (req, res) => {
-  try {
-    const {
-      orderId, // local MongoDB order _id
-      razorpay_order_id,
-      razorpay_payment_id,
-      razorpay_signature,
-    } = req.body;
+    const { razorpay_payment_id, razorpay_order_id, razorpay_signature } =
+      req.body;
 
     // 🔐 Generate expected signature
     const body = razorpay_order_id + "|" + razorpay_payment_id;
@@ -81,27 +59,44 @@ export const verifyPayment = async (req, res) => {
       .update(body.toString())
       .digest("hex");
 
-    console.log(expectedSignature);
     if (expectedSignature !== razorpay_signature) {
-      return res.status(400).json({ message: "Invalid payment signature" });
+      return res.redirect("/payment-failed"); // frontend route
     }
 
     // ✅ Update order status in DB
-    const order = await Order.findById(orderId);
+    const order = await Order.findOne({ razorpay_order_id });
     if (!order) {
-      return res.status(404).json({ message: "Order not found" });
+      return res.redirect("/payment-failed");
     }
 
-    order.razorpay_order_id = razorpay_order_id;
+    order.isPaid = true;
     order.razorpay_payment_id = razorpay_payment_id;
     order.razorpay_signature = razorpay_signature;
-    order.isPaid = true;
-
     await order.save();
 
-    res.json({ message: "Payment verified successfully", order });
+    return res.redirect(`/payment-success?orderId=${order._id}`);
   } catch (err) {
-    console.error("Verify Payment Error:", err);
-    res.status(500).json({ message: "Payment verification failed" });
+    console.error("Verify Payment Redirect Error:", err);
+    res.redirect("/payment-failed");
+  }
+};
+
+// ============================
+// ✅ Get Orders (User’s Orders)
+// ============================
+export const getOrders = async (req, res) => {
+  try {
+    const userId = req.user.userId;
+
+    // Optional filter: ?status=paid / pending
+    const query = req.query.status
+      ? { userId, isPaid: req.query.status === "paid" }
+      : { userId };
+
+    const orders = await Order.find(query).sort({ createdAt: -1 });
+    res.json({ orders });
+  } catch (err) {
+    console.error("Get Orders Error:", err);
+    res.status(500).json({ message: "Failed to fetch orders" });
   }
 };
