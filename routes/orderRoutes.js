@@ -9,7 +9,7 @@ import authMiddleware from "../middlewares/authMiddleware.js";
 const router = express.Router();
 
 // Create Razorpay order
-router.post("/create-order", authMiddleware, createOrder);
+router.post("/create-order", createOrder);
 
 // Get all orders for logged-in user
 router.get("/", authMiddleware, getOrders);
@@ -18,3 +18,4 @@ router.get("/", authMiddleware, getOrders);
 router.post("/verify-payment-redirect", verifyPaymentRedirect);
 
 export default router;
+
