@@ -14,7 +14,12 @@ dotenv.config();
 connectDB();
 const app = express();
 
-app.use(cors());
+app.use(cors({
+  origin: "*", 
+  methods: ["GET", "POST"],
+  allowedHeaders: ["Content-Type", "Authorization"]
+}));
+
 app.use(express.json());
 
 app.use("/api/user", userRoutes);
@@ -31,3 +36,4 @@ app.get("/", (req, res) => {
 app.listen(process.env.PORT, () =>
   console.log(`Server running on port ${process.env.PORT || 5000}`)
 );
+
